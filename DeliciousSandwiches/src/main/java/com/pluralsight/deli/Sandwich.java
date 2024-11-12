@@ -62,7 +62,7 @@ public class Sandwich {
         return extraToppingType;
     }
 
-    public double calculatePrice(){
+    public double calculatePrice() throws RuntimeException{
         double priceBasedOnBread = 0.00;
         double priceBasedOnMeat = 0.00;
         double  priceBasedOnCheese = 0.00;
@@ -92,7 +92,7 @@ public class Sandwich {
                         if (!getCheeseType().isEmpty())
                             priceBasedOnCheese = 2.25;
                     }
-                    default -> throw new IllegalStateException("Unexpected value: " + getLength());
+                    default -> throw new RuntimeException("This size is not an option.");
                 };
         if (isHasExtraToppings()){
             if ((getExtraToppingType().contains("Meat") || getExtraToppingType().contains("meat")) && !getMeatType().isEmpty()){
@@ -108,6 +108,14 @@ public class Sandwich {
         return priceBasedOnBread + priceBasedOnMeat + priceBasedOnCheese;
 
     }
+
+    public String encodedString(){
+        StringBuilder sb = new StringBuilder();
+        sb.append(getLength()+"|").append(getBreadType()+"|").append((!getMeatType().isEmpty()?getMeatType():"null")+"|").append((!getCheeseType().isEmpty()?getCheeseType():"null")+"|").append((!getSauceType().isEmpty()?getSauceType():"null")+"|").append((isHasExtraToppings()?getExtraToppingType():"null")+"|").append(String.format("$%.2f",calculatePrice()));
+
+        return sb.toString();
+    }
+
     @Override
     public String toString(){
         return String.format("\n|Order| \nSandwich length:%d inches \nBread Type:%s \nMeat:%s \nCheese:%s \nSauce:%s \nSandwich Price: $%.2f",

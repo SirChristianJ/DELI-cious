@@ -50,14 +50,20 @@ public class Order {
 
     public double calculateLineItemPrice(Sandwich sandwich){
         double totalLineItemPrice = 0;
-        if (isWantsChips())
+        if (isWantsChips()) {
             totalLineItemPrice += 1.50;
-        if(isWantsDrink())
-            switch (getDrinkSize()){
-                case "small" -> totalLineItemPrice += 2.00;
-                case "medium" -> totalLineItemPrice += 2.50;
-                case "large" -> totalLineItemPrice += 3.00;
+        }
+        if(isWantsDrink()) {
+            try {
+                switch (getDrinkSize()) {
+                    case "small" -> totalLineItemPrice += 2.00;
+                    case "medium" -> totalLineItemPrice += 2.50;
+                    case "large" -> totalLineItemPrice += 3.00;
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
+        }
 
         totalLineItemPrice += sandwich.calculatePrice();
         return totalLineItemPrice;
@@ -68,10 +74,21 @@ public class Order {
                                 .reduce(0.00, Double::sum);
     }
 
+    public String encodedString(){
+        StringBuilder sb = new StringBuilder();
+        for(Sandwich sandwich: getSandwiches()){
+            sb.append(sandwich.encodedString());
+            sb.append(String.format("|$%.2f", calculateLineItemPrice(sandwich)));
+        }
+
+        sb.append(String.format("\n|Total|$%.2f\n", calculateTotalOrderPrice()));
+        return sb.toString();
+    }
+
     public String displayToConsole(){
         StringBuilder sb = new StringBuilder();
         for(Sandwich sandwich: getSandwiches()){
-            sb.append(sandwich).append(String.format("\nTotal Price (drinks & chips included): $%.2f\n", calculateLineItemPrice(sandwich)));
+            sb.append(sandwich).append(String.format("\nMeal Price (drinks & chips included): $%.2f\n", calculateLineItemPrice(sandwich)));
         }
 
         sb.append(String.format("\n|Total Order Price|: $%.2f", calculateTotalOrderPrice()));
